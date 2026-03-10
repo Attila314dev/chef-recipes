@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chef — Recept</title>
+  <meta name="description" content="Részletes receptoldal kattintható attribútumokkal." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="theme-chef">
+  <header class="topbar sticky">
+    <div class="container topbar-inner">
+      <div class="brand-block">
+        <a class="brand" href="index.html">Chef</a>
+        <p class="brand-subtitle">Recept részletek</p>
+      </div>
+      <div class="topbar-actions">
+        <a class="btn btn-ghost btn-small" href="index.html">← Vissza a listához</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container page">
+    <div id="recipeState" class="muted">Recept betöltése...</div>
+
+    <article id="recipeView" class="hidden">
+      <section class="recipe-hero card">
+        <div class="recipe-hero-media">
+          <img id="recipeImage" class="detail-image" src="" alt="" />
+          <div id="recipeImageFallback" class="detail-image-fallback hidden">🍲</div>
+        </div>
+
+        <div class="recipe-hero-content">
+          <div class="detail-topline">
+            <a class="text-link" href="index.html">← Vissza</a>
+          </div>
+          <h1 id="recipeName"></h1>
+          <p id="recipeDescription" class="detail-description"></p>
+
+          <div id="detailPrimaryChips" class="chip-group"></div>
+
+          <div class="detail-stats">
+            <div class="stat-box">
+              <span class="stat-label">Előkészítés</span>
+              <strong id="recipePrepTime">-</strong>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">Főzés / sütés</span>
+              <strong id="recipeCookTime">-</strong>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">Nehézség</span>
+              <strong id="recipeDifficulty">-</strong>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">Tálalás</span>
+              <strong id="recipeServingTemp">-</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="detail-grid">
+        <section class="card detail-card">
+          <h2>Gasztronómiai profil</h2>
+          <div class="detail-field">
+            <span class="detail-label">Kategória</span>
+            <div id="recipeCategory" class="chip-group"></div>
+          </div>
+          <div class="detail-field">
+            <span class="detail-label">Diéta / típus</span>
+            <div id="recipeDiet" class="chip-group"></div>
+          </div>
+          <div class="detail-field">
+            <span class="detail-label">Konyha</span>
+            <div id="recipeCuisine" class="chip-group"></div>
+          </div>
+          <div class="detail-field">
+            <span class="detail-label">Eljárások</span>
+            <div id="recipeMethods" class="chip-group"></div>
+          </div>
+          <div class="detail-field">
+            <span class="detail-label">Eljárás-részletek</span>
+            <div id="recipeMethodDetails" class="chip-group"></div>
+          </div>
+          <div class="detail-field">
+            <span class="detail-label">Íz</span>
+            <div id="recipeTaste" class="chip-group"></div>
+          </div>
+          <div class="detail-field">
+            <span class="detail-label">Textúra</span>
+            <div id="recipeTexture" class="chip-group"></div>
+          </div>
+          <div class="detail-field">
+            <span class="detail-label">Szín</span>
+            <div id="recipeColor" class="chip-group"></div>
+          </div>
+          <div class="detail-field">
+            <span class="detail-label">Szezon</span>
+            <div id="recipeSeason" class="chip-group"></div>
+          </div>
+          <div class="detail-field">
+            <span class="detail-label">Allergének</span>
+            <div id="recipeAllergens" class="chip-group"></div>
+          </div>
+          <div class="detail-field">
+            <span class="detail-label">Tagek</span>
+            <div id="recipeTags" class="chip-group"></div>
+          </div>
+        </section>
+
+        <section class="card detail-card">
+          <h2>Összetevők</h2>
+          <ul id="recipeIngredients" class="ingredient-list"></ul>
+        </section>
+
+        <section class="card detail-card">
+          <h2>Elkészítés</h2>
+          <ol id="recipeSteps" class="steps-list"></ol>
+        </section>
+
+        <section class="card detail-card">
+          <h2>Megjegyzések</h2>
+          <div id="recipeNotes" class="notes-box muted"></div>
+        </section>
+
+        <section class="card detail-card">
+          <h2>Kapcsolódó receptek</h2>
+          <div id="relatedRecipes" class="related-list"></div>
+        </section>
+      </section>
+    </article>
+  </main>
+
+  <script src="recipe.js"></script>
+</body>
+</html>

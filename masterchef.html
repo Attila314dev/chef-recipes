@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MasterChef Studio — Szerkesztő</title>
+  <meta name="description" content="Statikus, kliensoldali receptszerkesztő JSON import/exporttal." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="theme-studio">
+  <header class="topbar sticky studio-topbar">
+    <div class="container topbar-inner">
+      <div class="brand-block">
+        <a class="brand brand-studio" href="masterchef.html">MasterChef Studio</a>
+        <p class="brand-subtitle">Statikus szerkesztő JSON import/exporttal</p>
+      </div>
+      <div class="topbar-actions">
+        <a class="btn btn-ghost btn-small" href="index.html">Chef nézet</a>
+        <button id="logoutBtn" class="btn btn-danger btn-small hidden" type="button">Kijelentkezés</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container page">
+    <section id="loginGate" class="auth-wrap">
+      <div class="auth-card card">
+        <h1>Belépés a MasterChef Studio felületre</h1>
+        <p class="muted">
+          Ez egy egyszerű kliensoldali access gate. GitHub Pages + statikus működés miatt
+          nem teljes biztonsági megoldás, csak szerkesztői belépőréteg.
+        </p>
+
+        <form id="loginForm" class="stack-lg">
+          <div>
+            <label class="field-label" for="passwordInput">Jelszó</label>
+            <input id="passwordInput" class="input" type="password" autocomplete="current-password" placeholder="Add meg a jelszót" />
+          </div>
+          <button class="btn btn-primary btn-block" type="submit">Belépés</button>
+          <p id="loginMessage" class="form-message"></p>
+        </form>
+
+        <div class="studio-help-box">
+          <strong>Megjegyzés:</strong>
+          <span>A jelszó az <code>auth.js</code> fájlban konfigurálható.</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="studioApp" class="hidden">
+      <div class="studio-layout">
+        <section class="studio-main">
+          <div id="studioAlerts" class="stack-sm"></div>
+
+          <form id="recipeForm" class="stack-lg">
+            <section class="card form-section">
+              <div class="section-head">
+                <h2>Alapadatok</h2>
+                <p class="muted">Azonosítók, cím, leírás és megjelenítési adatok.</p>
+              </div>
+
+              <div class="form-grid">
+                <div>
+                  <label class="field-label" for="id">ID *</label>
+                  <input id="id" name="id" class="input" type="text" placeholder="pl. 1" />
+                </div>
+                <div>
+                  <label class="field-label" for="slug">Slug *</label>
+                  <input id="slug" name="slug" class="input" type="text" placeholder="pl. tyukhusleves" />
+                </div>
+                <div class="full">
+                  <label class="field-label" for="name">Név *</label>
+                  <input id="name" name="name" class="input" type="text" placeholder="pl. Tyúkhúsleves" />
+                </div>
+                <div class="full">
+                  <label class="field-label" for="description">Leírás *</label>
+                  <textarea id="description" name="description" class="input textarea" rows="3" placeholder="Rövid, jól olvasható leírás"></textarea>
+                </div>
+                <div class="full">
+                  <label class="field-label" for="image">Kép útvonala</label>
+                  <input id="image" name="image" class="input" type="text" placeholder="pl. images/tyukhusleves.jpg" />
+                </div>
+                <div>
+                  <label class="field-label" for="cuisine">Konyha</label>
+                  <input id="cuisine" name="cuisine" class="input" type="text" placeholder="pl. magyar" />
+                </div>
+                <div>
+                  <label class="field-label" for="servingTemp">Tálalási hőmérséklet</label>
+                  <input id="servingTemp" name="servingTemp" class="input" type="text" placeholder="pl. forrón" />
+                </div>
+              </div>
+            </section>
+
+            <section class="card form-section">
+              <div class="section-head">
+                <h2>Gasztronómiai profil</h2>
+                <p class="muted">Kattintható, kapcsolatalapú attribútumok.</p>
+              </div>
+
+              <div class="form-grid">
+                <div class="full">
+                  <label class="field-label" for="category">Kategória (vesszővel elválasztva) *</label>
+                  <input id="category" name="category" class="input" type="text" placeholder="pl. leves, húsleves" />
+                </div>
+                <div class="full">
+                  <label class="field-label" for="diet">Diéta / típus (vesszővel elválasztva) *</label>
+                  <input id="diet" name="diet" class="input" type="text" placeholder="pl. húsos, hagyományos" />
+                </div>
+                <div class="full">
+                  <label class="field-label" for="methods">Eljárások (vesszővel elválasztva) *</label>
+                  <input id="methods" name="methods" class="input" type="text" placeholder="pl. főzés, pirítás" />
+                </div>
+                <div class="full">
+                  <label class="field-label" for="methodDetails">Eljárás-részletek (vesszővel elválasztva)</label>
+                  <input id="methodDetails" name="methodDetails" class="input" type="text" placeholder="pl. 100 °C, fedő nélkül, lassú tűzön" />
+                </div>
+                <div class="full">
+                  <label class="field-label" for="taste">Ízprofil (vesszővel elválasztva)</label>
+                  <input id="taste" name="taste" class="input" type="text" placeholder="pl. sós, umami, lágy" />
+                </div>
+                <div class="full">
+                  <label class="field-label" for="texture">Textúra (vesszővel elválasztva)</label>
+                  <input id="texture" name="texture" class="input" type="text" placeholder="pl. leveses, puha" />
+                </div>
+                <div class="full">
+                  <label class="field-label" for="color">Színvilág (vesszővel elválasztva)</label>
+                  <input id="color" name="color" class="input" type="text" placeholder="pl. aranysárga" />
+                </div>
+              </div>
+            </section>
+
+            <section class="card form-section">
+              <div class="section-head">
+                <h2>Idő és nehézség</h2>
+                <p class="muted">Operatív konyhai adatok.</p>
+              </div>
+
+              <div class="form-grid">
+                <div>
+                  <label class="field-label" for="prepTimeMin">Előkészítés (perc)</label>
+                  <input id="prepTimeMin" name="prepTimeMin" class="input" type="number" min="0" placeholder="20" />
+                </div>
+                <div>
+                  <label class="field-label" for="cookTimeMin">Főzés / sütés (perc)</label>
+                  <input id="cookTimeMin" name="cookTimeMin" class="input" type="number" min="0" placeholder="90" />
+                </div>
+                <div>
+                  <label class="field-label" for="difficulty">Nehézség *</label>
+                  <select id="difficulty" name="difficulty" class="input select">
+                    <option value="">Válassz</option>
+                    <option value="könnyű">Könnyű</option>
+                    <option value="közepes">Közepes</option>
+                    <option value="haladó">Haladó</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="field-label" for="season">Szezon</label>
+                  <select id="season" name="season" class="input select">
+                    <option value="">Válassz</option>
+                    <option value="tavasz">Tavasz</option>
+                    <option value="nyár">Nyár</option>
+                    <option value="ősz">Ősz</option>
+                    <option value="tél">Tél</option>
+                    <option value="egész évben">Egész évben</option>
+                  </select>
+                </div>
+              </div>
+            </section>
+
+            <section class="card form-section">
+              <div class="section-head row-between">
+                <div>
+                  <h2>Összetevők</h2>
+                  <p class="muted">Legalább 1 összetevő szükséges.</p>
+                </div>
+                <button id="addIngredientBtn" class="btn btn-secondary btn-small" type="button">+ Összetevő</button>
+              </div>
+              <div id="ingredientsList" class="stack-md"></div>
+            </section>
+
+            <section class="card form-section">
+              <div class="section-head row-between">
+                <div>
+                  <h2>Elkészítési lépések</h2>
+                  <p class="muted">Legalább 1 lépés szükséges.</p>
+                </div>
+                <button id="addStepBtn" class="btn btn-secondary btn-small" type="button">+ Lépés</button>
+              </div>
+              <div id="stepsList" class="stack-md"></div>
+            </section>
+
+            <section class="card form-section">
+              <div class="section-head">
+                <h2>Allergének és tagek</h2>
+                <p class="muted">Vesszővel elválasztott listák.</p>
+              </div>
+
+              <div class="form-grid">
+                <div class="full">
+                  <label class="field-label" for="allergens">Allergének</label>
+                  <input id="allergens" name="allergens" class="input" type="text" placeholder="pl. glutén, tej, tojás" />
+                </div>
+                <div class="full">
+                  <label class="field-label" for="tags">Tagek</label>
+                  <input id="tags" name="tags" class="input" type="text" placeholder="pl. vasárnapi ebéd, klasszikus, ünnepi" />
+                </div>
+              </div>
+            </section>
+
+            <section class="card form-section">
+              <div class="section-head">
+                <h2>Kapcsolódó receptek</h2>
+                <p class="muted">Slugok vesszővel elválasztva.</p>
+              </div>
+              <div class="form-grid">
+                <div class="full">
+                  <label class="field-label" for="relatedRecipes">Kapcsolódó receptek</label>
+                  <input id="relatedRecipes" name="relatedRecipes" class="input" type="text" placeholder="pl. sutoben-sult-zoldsegek, sutotok-kremleves" />
+                </div>
+                <div class="full">
+                  <label class="field-label" for="notes">Megjegyzések</label>
+                  <textarea id="notes" name="notes" class="input textarea" rows="4" placeholder="További szakmai vagy konyhai megjegyzések"></textarea>
+                </div>
+              </div>
+            </section>
+
+            <section class="card form-section">
+              <div class="section-head row-between">
+                <div>
+                  <h2>JSON Preview</h2>
+                  <p class="muted">Valós időben generált recept JSON.</p>
+                </div>
+                <div class="inline-actions">
+                  <button id="copyJsonBtn" class="btn btn-secondary btn-small" type="button">Másolás</button>
+                  <button id="downloadJsonBtn" class="btn btn-primary btn-small" type="button">Export .json</button>
+                </div>
+              </div>
+              <pre id="jsonPreview" class="json-preview"></pre>
+            </section>
+
+            <section class="card form-section">
+              <div class="section-head">
+                <h2>Import / szerkesztés</h2>
+                <p class="muted">Illessz be meglévő recept JSON-t, vagy tölts vissza korábbi draftot.</p>
+              </div>
+
+              <div class="stack-md">
+                <div>
+                  <label class="field-label" for="jsonImport">Recept JSON import</label>
+                  <textarea id="jsonImport" class="input textarea" rows="10" placeholder='{"id":"9","slug":"uj-recept", ...}'></textarea>
+                </div>
+                <div class="inline-actions wrap">
+                  <button id="loadJsonBtn" class="btn btn-secondary" type="button">JSON betöltése a formba</button>
+                  <button id="saveDraftBtn" class="btn btn-ghost" type="button">Piszkozat mentése</button>
+                  <button id="restoreDraftBtn" class="btn btn-ghost" type="button">Draft visszaállítása</button>
+                  <button id="clearDraftBtn" class="btn btn-danger" type="button">Piszkozat törlése</button>
+                  <button id="resetFormBtn" class="btn btn-ghost" type="button">Űrlap ürítése</button>
+                </div>
+              </div>
+            </section>
+
+            <section class="sticky-submit-bar">
+              <button id="validateBtn" class="btn btn-secondary" type="button">Validálás</button>
+              <button class="btn btn-primary" type="submit">JSON frissítése</button>
+            </section>
+          </form>
+        </section>
+
+        <aside class="studio-side card">
+          <h2>Gyors útmutató</h2>
+          <ul class="side-list">
+            <li>A slug legyen URL-barát, egyedi.</li>
+            <li>Az összetett mezőket vesszővel válaszd el.</li>
+            <li>Az összetevőknél legalább név legyen megadva.</li>
+            <li>A JSON preview a jelenlegi formállapotot mutatja.</li>
+            <li>Az export egyetlen receptet ment le JSON fájlként.</li>
+            <li>GitHub Pages-en a publikus adatforrás a <code>data/recipes.json</code>.</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <script src="auth.js"></script>
+  <script src="masterchef.js"></script>
+</body>
+</html>

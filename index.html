@@ -1,1 +1,176 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chef — Receptkatalógus</title>
+  <meta name="description" content="Mobil-first, statikus receptkatalogizáló szakácsok számára." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="theme-chef">
+  <header class="topbar sticky">
+    <div class="container topbar-inner">
+      <div class="brand-block">
+        <a class="brand" href="index.html">Chef</a>
+        <p class="brand-subtitle">Kapcsolatalapú recepttudásbázis</p>
+      </div>
+      <div class="topbar-actions">
+        <a class="btn btn-ghost btn-small" href="masterchef.html">MasterChef Studio</a>
+      </div>
+    </div>
+  </header>
 
+  <main class="container page">
+    <section class="hero-card">
+      <div>
+        <h1>Kereshető, kattintható receptkatalógus</h1>
+        <p class="muted">
+          Böngéssz receptek között, szűrj attribútumok szerint, és navigálj kapcsolatok mentén
+          összetevőkre, technológiákra, diétákra és ízprofilokra.
+        </p>
+      </div>
+    </section>
+
+    <section class="search-sticky-wrap">
+      <div class="search-panel card">
+        <label class="field-label" for="searchInput">Keresés</label>
+        <div class="search-row">
+          <input
+            id="searchInput"
+            class="input"
+            type="search"
+            placeholder="Pl. tyúkhúsleves, répa, főzés, vegán, krémes..."
+            autocomplete="off"
+          />
+          <button id="openFiltersBtn" class="btn btn-secondary" type="button">Szűrők</button>
+        </div>
+
+        <div id="activeFilters" class="active-filters"></div>
+      </div>
+    </section>
+
+    <section id="resultsMeta" class="results-meta muted"></section>
+
+    <section id="recipesGrid" class="recipes-grid" aria-live="polite"></section>
+
+    <template id="recipeCardTemplate">
+      <article class="recipe-card card">
+        <a class="recipe-card-link image-wrap" href="#">
+          <img class="recipe-image" src="" alt="" loading="lazy" />
+          <div class="image-fallback hidden">🍽️</div>
+        </a>
+        <div class="recipe-card-body">
+          <div class="recipe-card-header">
+            <h2 class="recipe-title">
+              <a class="text-link recipe-card-link" href="#"></a>
+            </h2>
+          </div>
+          <p class="recipe-description"></p>
+          <div class="chip-group recipe-primary-chips"></div>
+          <div class="recipe-meta meta-inline"></div>
+          <div class="recipe-card-actions">
+            <a class="btn btn-primary recipe-card-link" href="#">Megnyitás</a>
+          </div>
+        </div>
+      </article>
+    </template>
+  </main>
+
+  <aside id="filtersDrawer" class="drawer" aria-hidden="true">
+    <div class="drawer-overlay" data-close-drawer="true"></div>
+    <div class="drawer-panel" role="dialog" aria-modal="true" aria-labelledby="filtersTitle">
+      <div class="drawer-header">
+        <h2 id="filtersTitle">Szűrők</h2>
+        <button class="icon-btn" type="button" data-close-drawer="true" aria-label="Bezárás">✕</button>
+      </div>
+
+      <div class="drawer-body">
+        <div class="filter-section">
+          <label class="field-label" for="filterCategory">Kategória</label>
+          <select id="filterCategory" class="input select">
+            <option value="">Összes</option>
+          </select>
+        </div>
+
+        <div class="filter-section">
+          <label class="field-label" for="filterDiet">Diéta / típus</label>
+          <select id="filterDiet" class="input select">
+            <option value="">Összes</option>
+          </select>
+        </div>
+
+        <div class="filter-section">
+          <label class="field-label" for="filterIngredients">Összetevő</label>
+          <select id="filterIngredients" class="input select">
+            <option value="">Összes</option>
+          </select>
+        </div>
+
+        <div class="filter-section">
+          <label class="field-label" for="filterMethods">Eljárás</label>
+          <select id="filterMethods" class="input select">
+            <option value="">Összes</option>
+          </select>
+        </div>
+
+        <div class="filter-section">
+          <label class="field-label" for="filterTaste">Ízprofil</label>
+          <select id="filterTaste" class="input select">
+            <option value="">Összes</option>
+          </select>
+        </div>
+
+        <div class="filter-section">
+          <label class="field-label" for="filterTexture">Textúra</label>
+          <select id="filterTexture" class="input select">
+            <option value="">Összes</option>
+          </select>
+        </div>
+
+        <div class="filter-section">
+          <label class="field-label" for="filterColor">Színvilág</label>
+          <select id="filterColor" class="input select">
+            <option value="">Összes</option>
+          </select>
+        </div>
+
+        <div class="filter-section">
+          <label class="field-label" for="filterDifficulty">Nehézség</label>
+          <select id="filterDifficulty" class="input select">
+            <option value="">Összes</option>
+            <option value="könnyű">Könnyű</option>
+            <option value="közepes">Közepes</option>
+            <option value="haladó">Haladó</option>
+          </select>
+        </div>
+
+        <div class="filter-section">
+          <label class="field-label" for="filterSeason">Szezon</label>
+          <select id="filterSeason" class="input select">
+            <option value="">Összes</option>
+            <option value="tavasz">Tavasz</option>
+            <option value="nyár">Nyár</option>
+            <option value="ősz">Ősz</option>
+            <option value="tél">Tél</option>
+            <option value="egész évben">Egész évben</option>
+          </select>
+        </div>
+
+        <div class="filter-section">
+          <label class="field-label" for="filterAllergens">Allergén</label>
+          <select id="filterAllergens" class="input select">
+            <option value="">Összes</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="drawer-footer">
+        <button id="clearFiltersBtn" class="btn btn-ghost" type="button">Szűrők törlése</button>
+        <button id="applyFiltersBtn" class="btn btn-primary" type="button">Alkalmazás</button>
+      </div>
+    </div>
+  </aside>
+
+  <script src="app.js"></script>
+</body>
+</html>

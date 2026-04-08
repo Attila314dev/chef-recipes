@@ -9,13 +9,25 @@ export async function saveRecipesToEndpoint(payload) {
     body: JSON.stringify(payload)
   });
 
-  const data = await response.json().catch(() => ({
-    success: false,
-    message: "Ismeretlen válasz érkezett a save endpointról."
-  }));
+  const contentType = response.headers.get("content-type") || "";
+  const rawText = await response.text();
+
+  let data = null;
+
+  if (contentType.includes("application/json")) {
+    try {
+      data = JSON.parse(rawText);
+    } catch {
+      throw new Error(`Az endpoint hibás JSON választ adott. HTTP ${response.status}`);
+    }
+  } else {
+    throw new Error(
+      `Az endpoint nem JSON választ adott. HTTP ${response.status}. Válasz eleje: ${rawText.slice(0, 180)}`
+    );
+  }
 
   if (!response.ok || !data.success) {
-    throw new Error(data.message || "A mentés nem sikerült.");
+    throw new Error(data.message || `Mentési hiba. HTTP ${response.status}`);
   }
 
   return data;

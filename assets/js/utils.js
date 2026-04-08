@@ -1,5 +1,15 @@
 export const DATA_URL = "./assets/data/recipes.json";
-export const SAVE_ENDPOINT_URL = "http://localhost:3000/api/save-recipes";
+
+function readRuntimeConfig() {
+  const config = window.CHEF_APP_CONFIG || {};
+  return {
+    SAVE_API_URL: typeof config.SAVE_API_URL === "string" ? config.SAVE_API_URL.trim() : ""
+  };
+}
+
+export function getSaveApiUrl() {
+  return readRuntimeConfig().SAVE_API_URL;
+}
 
 export function safeArray(value) {
   return Array.isArray(value) ? value : [];

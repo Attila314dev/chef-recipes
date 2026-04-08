@@ -1,7 +1,15 @@
-import { SAVE_ENDPOINT_URL } from "./utils.js";
+import { getSaveApiUrl } from "./utils.js";
 
 export async function saveRecipesToEndpoint(payload) {
-  const response = await fetch(SAVE_ENDPOINT_URL, {
+  const saveApiUrl = getSaveApiUrl();
+
+  if (!saveApiUrl) {
+    throw new Error(
+      "Nincs beállítva a SAVE_API_URL. Állítsd be a studio.html fájlban a window.CHEF_APP_CONFIG.SAVE_API_URL értékét."
+    );
+  }
+
+  const response = await fetch(saveApiUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -18,11 +26,11 @@ export async function saveRecipesToEndpoint(payload) {
     try {
       data = JSON.parse(rawText);
     } catch {
-      throw new Error(`Az endpoint hibás JSON választ adott. HTTP ${response.status}`);
+      throw new Error(`A save endpoint hibás JSON választ adott. HTTP ${response.status}`);
     }
   } else {
     throw new Error(
-      `Az endpoint nem JSON választ adott. HTTP ${response.status}. Válasz eleje: ${rawText.slice(0, 180)}`
+      `A save endpoint nem JSON választ adott. HTTP ${response.status}. Válasz eleje: ${rawText.slice(0, 180)}`
     );
   }
 

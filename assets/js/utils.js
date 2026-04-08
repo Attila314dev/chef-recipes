@@ -1,5 +1,5 @@
 export const DATA_URL = "./assets/data/recipes.json";
-export const SAVE_ENDPOINT_URL = "/api/save-recipes";
+export const SAVE_ENDPOINT_URL = "http://localhost:3000/api/save-recipes";
 
 export function safeArray(value) {
   return Array.isArray(value) ? value : [];

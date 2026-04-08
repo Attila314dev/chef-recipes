@@ -1,19 +1,4 @@
-function sendJson(res, statusCode, payload) {
-  res.statusCode = statusCode;
-  res.setHeader("Content-Type", "application/json; charset=utf-8");
-  res.end(JSON.stringify(payload));
-}
-
-function isValidDataset(body) {
-  return Boolean(
-    body &&
-    typeof body === "object" &&
-    Number.isInteger(Number(body.version)) &&
-    Array.isArray(body.recipes)
-  );
-}
-
-async function readJsonBody(req) {
+async function readJsonBodyFromNodeRequest(req) {
   if (req.body && typeof req.body === "object") {
     return req.body;
   }
@@ -27,14 +12,37 @@ async function readJsonBody(req) {
   return raw ? JSON.parse(raw) : {};
 }
 
-export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return sendJson(res, 405, {
-      success: false,
-      message: "Csak POST kérés engedélyezett."
-    });
-  }
+function sendNodeJson(res, statusCode, payload) {
+  res.statusCode = statusCode;
+  res.setHeader("Content-Type", "application/json; charset=utf-8");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.end(JSON.stringify(payload));
+}
 
+function jsonResponse(status, payload) {
+  return new Response(JSON.stringify(payload), {
+    status,
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type"
+    }
+  });
+}
+
+function isValidDataset(body) {
+  return Boolean(
+    body &&
+    typeof body === "object" &&
+    Number.isInteger(Number(body.version)) &&
+    Array.isArray(body.recipes)
+  );
+}
+
+async function updateGithubRecipesFile(body) {
   const token = process.env.GITHUB_TOKEN;
   const owner = process.env.GITHUB_OWNER;
   const repo = process.env.GITHUB_REPO;
@@ -42,27 +50,25 @@ export default async function handler(req, res) {
   const path = process.env.GITHUB_RECIPES_PATH || "assets/data/recipes.json";
 
   if (!token || !owner || !repo) {
-    return sendJson(res, 500, {
-      success: false,
-      message: "Hiányoznak a GitHub környezeti változók."
-    });
-  }
-
-  let body;
-  try {
-    body = await readJsonBody(req);
-  } catch (error) {
-    return sendJson(res, 400, {
-      success: false,
-      message: "A kérés törzse nem érvényes JSON."
-    });
+    return {
+      ok: false,
+      status: 500,
+      payload: {
+        success: false,
+        message: "Hiányoznak a GitHub környezeti változók."
+      }
+    };
   }
 
   if (!isValidDataset(body)) {
-    return sendJson(res, 400, {
-      success: false,
-      message: "A payload nem érvényes dataset."
-    });
+    return {
+      ok: false,
+      status: 400,
+      payload: {
+        success: false,
+        message: "A payload nem érvényes dataset."
+      }
+    };
   }
 
   const normalizedPayload = {
@@ -84,10 +90,14 @@ export default async function handler(req, res) {
 
     if (!currentResponse.ok) {
       const currentText = await currentResponse.text();
-      return sendJson(res, 502, {
-        success: false,
-        message: `Nem sikerült lekérni a jelenlegi GitHub fájlt. ${currentText}`
-      });
+      return {
+        ok: false,
+        status: 502,
+        payload: {
+          success: false,
+          message: `Nem sikerült lekérni a jelenlegi GitHub fájlt. ${currentText}`
+        }
+      };
     }
 
     const currentFile = await currentResponse.json();
@@ -111,22 +121,155 @@ export default async function handler(req, res) {
     const updateData = await updateResponse.json();
 
     if (!updateResponse.ok) {
-      return sendJson(res, 502, {
-        success: false,
-        message: updateData?.message || "A GitHub update nem sikerült."
-      });
+      return {
+        ok: false,
+        status: 502,
+        payload: {
+          success: false,
+          message: updateData?.message || "A GitHub update nem sikerült."
+        }
+      };
     }
 
-    return sendJson(res, 200, {
-      success: true,
-      message: "Mentés sikeres.",
-      commitSha: updateData?.commit?.sha || "",
-      updatedAt: normalizedPayload.updatedAt
-    });
+    return {
+      ok: true,
+      status: 200,
+      payload: {
+        success: true,
+        message: "Mentés sikeres.",
+        commitSha: updateData?.commit?.sha || "",
+        updatedAt: normalizedPayload.updatedAt
+      }
+    };
   } catch (error) {
-    return sendJson(res, 500, {
-      success: false,
-      message: error.message || "Váratlan szerverhiba történt."
+    return {
+      ok: false,
+      status: 500,
+      payload: {
+        success: false,
+        message: error.message || "Váratlan szerverhiba történt."
+      }
+    };
+  }
+}
+
+async function handleBodyObject(body) {
+  return updateGithubRecipesFile(body);
+}
+
+export default async function vercelHandler(req, res) {
+  if (req.method === "OPTIONS") {
+    return sendNodeJson(res, 200, {
+      success: true,
+      message: "CORS preflight ok."
     });
   }
+
+  if (req.method !== "POST") {
+    return sendNodeJson(res, 405, {
+      success: false,
+      message: "Csak POST kérés engedélyezett."
+    });
+  }
+
+  let body;
+  try {
+    body = await readJsonBodyFromNodeRequest(req);
+  } catch {
+    return sendNodeJson(res, 400, {
+      success: false,
+      message: "A kérés törzse nem érvényes JSON."
+    });
+  }
+
+  const result = await handleBodyObject(body);
+  return sendNodeJson(res, result.status, result.payload);
+}
+
+export async function handler(event) {
+  if (event.httpMethod === "OPTIONS") {
+    return {
+      statusCode: 200,
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type"
+      },
+      body: JSON.stringify({
+        success: true,
+        message: "CORS preflight ok."
+      })
+    };
+  }
+
+  if (event.httpMethod !== "POST") {
+    return {
+      statusCode: 405,
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type"
+      },
+      body: JSON.stringify({
+        success: false,
+        message: "Csak POST kérés engedélyezett."
+      })
+    };
+  }
+
+  let body;
+  try {
+    body = event.body ? JSON.parse(event.body) : {};
+  } catch {
+    return {
+      statusCode: 400,
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type"
+      },
+      body: JSON.stringify({
+        success: false,
+        message: "A kérés törzse nem érvényes JSON."
+      })
+    };
+  }
+
+  const result = await handleBodyObject(body);
+
+  return {
+    statusCode: result.status,
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type"
+    },
+    body: JSON.stringify(result.payload)
+  };
+}
+
+export async function onRequestOptions() {
+  return jsonResponse(200, {
+    success: true,
+    message: "CORS preflight ok."
+  });
+}
+
+export async function onRequestPost(context) {
+  let body;
+  try {
+    body = await context.request.json();
+  } catch {
+    return jsonResponse(400, {
+      success: false,
+      message: "A kérés törzse nem érvényes JSON."
+    });
+  }
+
+  const result = await handleBodyObject(body);
+  return jsonResponse(result.status, result.payload);
 }

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MasterChef Studio</title>
+  <meta name="description" content="Desktop-first szerkesztői felület receptkatalógushoz, PIN belépéssel." />
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/studio.css" />
+</head>
+<body data-page="studio">
+  <header class="site-header studio-header">
+    <div class="container header-row">
+      <a href="index.html" class="brand">
+        <span class="brand-mark">🧑‍🍳</span>
+        <span class="brand-text">MasterChef Studio</span>
+      </a>
+
+      <nav class="site-nav" aria-label="Fő navigáció">
+        <a href="index.html" class="nav-link">Chef</a>
+        <a href="studio.html" class="nav-link is-active">Studio</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container page page-studio">
+    <section id="studio-login-view" class="studio-view">
+      <div class="login-card">
+        <p class="eyebrow">Editor access gate</p>
+        <h1>MasterChef Studio</h1>
+        <p class="muted">
+          A belépési PIN a mai dátum DDMM formátumban.
+        </p>
+
+        <form id="studio-login-form" class="stack-form">
+          <label class="field">
+            <span class="field-label">PIN</span>
+            <input
+              id="studio-pin-input"
+              class="input input-large"
+              type="password"
+              inputmode="numeric"
+              maxlength="4"
+              placeholder="pl. 0804"
+              autocomplete="off"
+            />
+          </label>
+
+          <button class="button button-primary button-large" type="submit">
+            Belépés
+          </button>
+        </form>
+
+        <p id="studio-login-message" class="status-text" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <section id="studio-app-view" class="studio-view" hidden>
+      <div class="studio-topbar">
+        <div>
+          <p class="eyebrow">Szerkesztői nézet</p>
+          <h1>MasterChef Studio</h1>
+        </div>
+
+        <div class="studio-topbar-actions">
+          <span id="studio-save-status" class="save-status save-status-idle">Nincs módosítás</span>
+          <button id="studio-logout-btn" class="button button-secondary" type="button">Kijelentkezés</button>
+        </div>
+      </div>
+
+      <div class="studio-dashboard-card">
+        <div class="dashboard-copy">
+          <h2>Recepttár</h2>
+          <p class="muted">
+            Válassz egy receptet szerkesztéshez, vagy hozz létre újat.
+          </p>
+        </div>
+
+        <div class="dashboard-actions">
+          <button id="new-recipe-btn" class="button button-primary" type="button">Új recept</button>
+          <button id="restore-draft-btn" class="button button-secondary" type="button">Draft visszaállítása</button>
+          <button id="save-dataset-btn" class="button button-primary" type="button">Mentés</button>
+        </div>
+      </div>
+
+      <div class="studio-layout">
+        <aside class="studio-sidebar">
+          <div class="sidebar-card">
+            <label class="field">
+              <span class="field-label">Recept keresése</span>
+              <input id="studio-search-input" class="input" type="search" placeholder="Keresés címre vagy slugra..." />
+            </label>
+          </div>
+
+          <div class="sidebar-card">
+            <h2>Receptek</h2>
+            <div id="studio-recipe-list" class="studio-recipe-list"></div>
+          </div>
+        </aside>
+
+        <section class="studio-main">
+          <form id="recipe-editor-form" class="editor-form">
+            <div class="editor-grid">
+              <section class="panel-card">
+                <h2>Alapadatok</h2>
+
+                <div class="editor-two-col">
+                  <label class="field">
+                    <span class="field-label">ID</span>
+                    <input id="field-id" class="input" type="text" />
+                  </label>
+
+                  <label class="field">
+                    <span class="field-label">Slug</span>
+                    <input id="field-slug" class="input" type="text" />
+                  </label>
+                </div>
+
+                <label class="field">
+                  <span class="field-label">Cím</span>
+                  <input id="field-title" class="input" type="text" />
+                </label>
+
+                <label class="field">
+                  <span class="field-label">Rövid leírás</span>
+                  <textarea id="field-short-description" class="textarea" rows="2"></textarea>
+                </label>
+
+                <label class="field">
+                  <span class="field-label">Hosszú leírás</span>
+                  <textarea id="field-description" class="textarea" rows="5"></textarea>
+                </label>
+
+                <div class="editor-three-col">
+                  <label class="field">
+                    <span class="field-label">Adag</span>
+                    <input id="field-servings" class="input" type="number" min="1" step="1" />
+                  </label>
+
+                  <label class="field">
+                    <span class="field-label">Nehézség</span>
+                    <select id="field-difficulty" class="select">
+                      <option value="könnyű">könnyű</option>
+                      <option value="közepes">közepes</option>
+                      <option value="haladó">haladó</option>
+                    </select>
+                  </label>
+
+                  <label class="field">
+                    <span class="field-label">Előkészítés (perc)</span>
+                    <input id="field-prep-time" class="input" type="number" min="0" step="1" />
+                  </label>
+                </div>
+
+                <div class="editor-two-col">
+                  <label class="field">
+                    <span class="field-label">Főzés / sütés (perc)</span>
+                    <input id="field-cook-time" class="input" type="number" min="0" step="1" />
+                  </label>
+
+                  <label class="field">
+                    <span class="field-label">Összesen (perc)</span>
+                    <input id="field-total-time" class="input" type="number" min="0" step="1" />
+                  </label>
+                </div>
+              </section>
+
+              <section class="panel-card">
+                <h2>Meta mezők</h2>
+
+                <label class="field">
+                  <span class="field-label">Kategória (vesszővel elválasztva)</span>
+                  <input id="field-category" class="input" type="text" placeholder="pl. leves, vacsora" />
+                </label>
+
+                <label class="field">
+                  <span class="field-label">Diéta</span>
+                  <input id="field-diet" class="input" type="text" placeholder="pl. vegán, vegetáriánus" />
+                </label>
+
+                <label class="field">
+                  <span class="field-label">Technológiák</span>
+                  <input id="field-methods" class="input" type="text" placeholder="pl. főzés, pirítás" />
+                </label>
+
+                <label class="field">
+                  <span class="field-label">Technológiai részletek</span>
+                  <input id="field-method-details" class="input" type="text" placeholder="pl. 100 °C, fedő nélkül" />
+                </label>
+
+                <label class="field">
+                  <span class="field-label">Ízprofil</span>
+                  <input id="field-taste" class="input" type="text" placeholder="pl. sós, umami, friss" />
+                </label>
+
+                <label class="field">
+                  <span class="field-label">Textúra</span>
+                  <input id="field-texture" class="input" type="text" placeholder="pl. krémes, ropogós" />
+                </label>
+
+                <label class="field">
+                  <span class="field-label">Színvilág</span>
+                  <input id="field-color" class="input" type="text" placeholder="pl. zöld, aranysárga" />
+                </label>
+
+                <label class="field">
+                  <span class="field-label">Allergének</span>
+                  <input id="field-allergens" class="input" type="text" placeholder="pl. glutén, tej" />
+                </label>
+
+                <label class="field">
+                  <span class="field-label">Címkék</span>
+                  <input id="field-tags" class="input" type="text" placeholder="pl. gyors, klasszikus" />
+                </label>
+
+                <label class="field">
+                  <span class="field-label">Kapcsolódó receptek ID-k (vesszővel)</span>
+                  <input id="field-related-recipes" class="input" type="text" placeholder="pl. recipe-1, recipe-2" />
+                </label>
+              </section>
+            </div>
+
+            <div class="editor-grid editor-grid-bottom">
+              <section class="panel-card">
+                <div class="panel-head">
+                  <h2>Hozzávalók</h2>
+                  <button id="add-ingredient-btn" class="button button-secondary" type="button">+ Hozzávaló</button>
+                </div>
+
+                <div id="ingredients-editor" class="repeater-list"></div>
+              </section>
+
+              <section class="panel-card">
+                <div class="panel-head">
+                  <h2>Lépések</h2>
+                  <button id="add-step-btn" class="button button-secondary" type="button">+ Lépés</button>
+                </div>
+
+                <div id="steps-editor" class="repeater-list"></div>
+              </section>
+            </div>
+          </form>
+
+          <section class="panel-card preview-card">
+            <div class="panel-head">
+              <h2>Élő JSON preview</h2>
+              <span class="muted">Aktuális recept</span>
+            </div>
+            <pre id="recipe-json-preview" class="json-preview"></pre>
+          </section>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <template id="ingredient-row-template">
+    <div class="repeater-item ingredient-item">
+      <div class="editor-four-col">
+        <label class="field">
+          <span class="field-label">Név</span>
+          <input class="input ingredient-name" type="text" />
+        </label>
+
+        <label class="field">
+          <span class="field-label">Mennyiség</span>
+          <input class="input ingredient-amount" type="text" />
+        </label>
+
+        <label class="field">
+          <span class="field-label">Egység</span>
+          <input class="input ingredient-unit" type="text" />
+        </label>
+
+        <label class="field">
+          <span class="field-label">Megjegyzés</span>
+          <input class="input ingredient-note" type="text" />
+        </label>
+      </div>
+
+      <div class="repeater-actions">
+        <button class="button button-danger ingredient-remove" type="button">Törlés</button>
+      </div>
+    </div>
+  </template>
+
+  <template id="step-row-template">
+    <div class="repeater-item step-item">
+      <div class="editor-three-col">
+        <label class="field">
+          <span class="field-label">Sorrend</span>
+          <input class="input step-order" type="number" min="1" step="1" />
+        </label>
+
+        <label class="field">
+          <span class="field-label">Lépés címe</span>
+          <input class="input step-title" type="text" />
+        </label>
+      </div>
+
+      <label class="field">
+        <span class="field-label">Leírás</span>
+        <textarea class="textarea step-description" rows="3"></textarea>
+      </label>
+
+      <div class="repeater-actions">
+        <button class="button button-danger step-remove" type="button">Törlés</button>
+      </div>
+    </div>
+  </template>
+
+  <script type="module" src="assets/js/studio.js"></script>
+</body>
+</html>

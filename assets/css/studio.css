@@ -1,0 +1,204 @@
+.studio-header {
+  background: rgba(247, 242, 247, 0.92);
+}
+
+.page-studio {
+  padding-top: 28px;
+  padding-bottom: 56px;
+}
+
+.login-card {
+  width: min(100%, 520px);
+  margin: 40px auto 0;
+}
+
+.studio-view {
+  display: block;
+}
+
+.studio-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.studio-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.studio-dashboard-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 20px;
+}
+
+.dashboard-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.studio-layout {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: 320px 1fr;
+}
+
+.studio-sidebar,
+.studio-main {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+}
+
+.studio-recipe-list {
+  display: grid;
+  gap: 10px;
+  max-height: 65vh;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.studio-recipe-button {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  padding: 14px;
+  text-align: left;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--surface-muted);
+  color: var(--text);
+}
+
+.studio-recipe-button:hover,
+.studio-recipe-button:focus-visible {
+  outline: none;
+  border-color: rgba(31, 122, 83, 0.4);
+  background: #f3ecdf;
+}
+
+.studio-recipe-button.is-active {
+  border-color: rgba(31, 122, 83, 0.4);
+  background: #edf7f1;
+}
+
+.studio-recipe-title {
+  font-weight: 800;
+}
+
+.studio-recipe-meta {
+  font-size: 0.9rem;
+  color: var(--text-soft);
+}
+
+.editor-form,
+.editor-grid,
+.editor-grid-bottom {
+  display: grid;
+  gap: 16px;
+}
+
+.editor-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.editor-grid-bottom {
+  margin-top: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.editor-two-col,
+.editor-three-col,
+.editor-four-col {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.editor-two-col {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.editor-three-col {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.editor-four-col {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.repeater-list {
+  display: grid;
+  gap: 12px;
+}
+
+.repeater-item {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px;
+  background: var(--surface-muted);
+}
+
+.repeater-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+.preview-card {
+  margin-top: 16px;
+}
+
+.json-preview {
+  margin: 0;
+  padding: 18px;
+  border-radius: 16px;
+  background: #181716;
+  color: #e8f0ea;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  overflow: auto;
+  min-height: 240px;
+}
+
+@media (max-width: 1180px) {
+  .studio-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .studio-recipe-list {
+    max-height: none;
+  }
+}
+
+@media (max-width: 920px) {
+  .editor-grid,
+  .editor-grid-bottom,
+  .editor-two-col,
+  .editor-three-col,
+  .editor-four-col {
+    grid-template-columns: 1fr;
+  }
+
+  .studio-dashboard-card,
+  .studio-topbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

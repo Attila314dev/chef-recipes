@@ -74,6 +74,7 @@
           <p class="muted">
             Válassz egy receptet szerkesztéshez, vagy hozz létre újat.
           </p>
+          <p class="muted" id="save-api-info"></p>
         </div>
 
         <div class="dashboard-actions">
@@ -308,6 +309,11 @@
     </div>
   </template>
 
+  <script>
+    window.CHEF_APP_CONFIG = {
+      SAVE_API_URL: "https://YOUR-SAVE-ENDPOINT.example.com/api/save-recipes"
+    };
+  </script>
   <script type="module" src="assets/js/studio.js"></script>
 </body>
 </html>
